@@ -7,55 +7,50 @@ interface Emoji {
     keywords: string;
   }
 
-
 const Emojis = () => {
     const [emojis, setEmojis] = useState<Emoji[]>([]);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchEmoji, setSearchEmoji] = useState('');
 
     useEffect(() => {
       const fetchEmojis = async () => {
         try {
           const response = await fetch('/emojis.json');
           const data = await response.json();
-
           console.log(data)
 
           setEmojis(data);
         } catch (error) {
-          console.error('Error fetching emojis:', error);
+          console.error('Error, emojis fetching problems', error);
         }
-       
       };
       fetchEmojis();
     }, []);
 
-    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(event.target.value);
+      const changeSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchEmoji(event.target.value);
       };
     
-      const filteredEmojis = emojis.filter((emoji) => {
-        if (searchTerm === '') {
-          return true; // Visa alla emojis om sökrutan är tom
-        }
-        const keywords = emoji.keywords.split(' ');
-        return keywords.some((keyword) => keyword.includes(searchTerm));
-      }).slice(0, 20); // Max 20 matchande emojis
-    
-
+      const emojisFilter = emojis.filter((emoji) => {
+        if (searchEmoji === '') {
+          return true;
+          }
+        const usedKeyword = emoji.keywords.split(' ');
+        return usedKeyword.some((keyword) => keyword.includes(searchEmoji));
+      }).slice(0, 20); 
   return (
     <div className="container mx-auto px-4 py-8">
       <input
         type="text"
         placeholder="Type something to search for emojis..."
-        value={searchTerm}
-        onChange={handleSearchChange}
-        className="w-full mb-4 p-2 border border-gray-300 rounded-md"
+        value={searchEmoji}
+        onChange={changeSearch}
+        className="w-full mb-4 p-2 border border-blue-200 rounded-md"
       />
-      {searchTerm === '' ? (
+      {searchEmoji === '' ? (
         <>
-          <div className="grid grid-cols-4 gap-4">
-            {filteredEmojis.map((emoji) => (
-              <div key={emoji.title} className="bg-blue-50 p-4 text-center rounded-md">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
+            {emojisFilter.map((emoji) => (
+              <div key={emoji.title} className="bg-blue-50 p-4 text-center border border-blue-200 rounded-md">
                 <span className="text-2xl">{emoji.symbol}</span>
                 <p className="mt-2">{emoji.title}</p>
               </div>
@@ -63,9 +58,9 @@ const Emojis = () => {
           </div>
         </>
       ) : (
-        <div className="grid grid-cols-4 gap-4">
-          {filteredEmojis.map((emoji) => (
-            <div key={emoji.title} className="bg-gray-100 p-4 text-center rounded-md">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
+          {emojisFilter.map((emoji) => (
+            <div key={emoji.title} className="bg-yellow-50 p-4 text-center border border-yellow-200 rounded-md">
               <span className="text-2xl">{emoji.symbol}</span>
               <p className="mt-2">{emoji.title}</p>
             </div>
